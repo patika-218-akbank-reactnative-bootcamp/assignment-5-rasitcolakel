@@ -1,0 +1,15 @@
+{
+    "expo": {
+      "name": "Patikka Assignemnt 5",
+      "version": "1.0.0",
+      "slug": "your-app-slug",
+      "ios": {
+        "bundleIdentifier": "com.assignment5.rasitcolakel",
+        "buildNumber": "1.0.0"
+      },
+      "android": {
+        "package": "com.assignment5.rasitcolakel",
+        "versionCode": 1
+      }
+    }
+  }

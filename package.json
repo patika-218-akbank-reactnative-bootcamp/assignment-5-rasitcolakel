@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "expo": "^46.0.0",
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-native": "0.69.4",
+    "react-native-web": "~0.18.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.6",
+    "@types/react": "~18.0.0",
+    "@types/react-native": "~0.69.1",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "eslint": "^8.23.0",
+    "eslint-config-universe": "^11.1.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.6.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "version": "1.0.0",
+  "private": true,
+  "name": "assignment-5-rasitcolakel",
+  "eslintConfig": {
+    "extends": "universe/native"
+  }
+}
