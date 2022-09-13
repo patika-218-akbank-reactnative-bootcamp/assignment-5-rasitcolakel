@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import { genresSlice } from './slices/genres';
 import { playlistsSlice } from './slices/playlists';
@@ -29,4 +29,6 @@ const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 export default store;

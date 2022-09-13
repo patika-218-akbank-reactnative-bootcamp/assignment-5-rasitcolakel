@@ -2,13 +2,13 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomTabs from '@src/screens/app/BottomTabs';
+import { useAppDispatch } from '@src/store';
 import { setGenres } from '@src/store/slices/genres';
-import { setPlaylists } from '@src/store/slices/playlists';
-import { setTracks } from '@src/store/slices/tracks';
-import { Playlist, Track } from '@src/types/APITypes';
+import { fetchPlaylists } from '@src/store/slices/playlists';
+import { fetchTracks, setTracks } from '@src/store/slices/tracks';
+import { Track } from '@src/types/APITypes';
 import { getGenres, search } from '@src/utils/api';
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 export type AppStackParamsList = {
   BottomTabs: NavigatorScreenParams<BottomTabParamList>;
@@ -30,7 +30,7 @@ export type ProfileScreenParamsList = {
 const Stack = createStackNavigator<AppStackParamsList>();
 
 const AppStack = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const initGenres = async () => {
     try {
       const data = await getGenres();
@@ -41,22 +41,14 @@ const AppStack = () => {
   };
   const initPlaylists = async () => {
     try {
-      const data = await search<Playlist>({
-        type: 'playlist',
-      });
-      console.log('data', data);
-      dispatch(setPlaylists(data));
+      dispatch(fetchPlaylists());
     } catch (error: any) {
       console.log('e', error);
     }
   };
   const initTracks = async () => {
     try {
-      const data = await search<Track>({
-        type: 'track',
-      });
-      console.log('data', data);
-      dispatch(setTracks(data));
+      dispatch(fetchTracks());
     } catch (error: any) {
       console.log('e', error);
     }

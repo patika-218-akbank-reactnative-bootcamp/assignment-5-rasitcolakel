@@ -32,6 +32,7 @@ export const HomeStyles = StyleSheet.create({
     height: 50,
   },
   playlistItemTitle: {
+    minHeight: 10,
     flex: 1,
     marginLeft: 5,
     margin: 5,
@@ -57,6 +58,13 @@ export const HomeStyles = StyleSheet.create({
   trackItemTitle: {
     flex: 1,
     marginLeft: 5,
+    marginRight: 15,
     borderRadius: 5,
+  },
+  trackItemIcon: {
+    height: 35,
+    width: 35,
+    padding: 5,
+    paddingHorizontal: 10,
   },
 });

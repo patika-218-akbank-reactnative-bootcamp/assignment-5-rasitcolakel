@@ -21,6 +21,7 @@ export interface SearchResponse<T> {
   data: T[];
   total: number;
   next: string;
+  loading: boolean;
 }
 
 export interface Playlist {
