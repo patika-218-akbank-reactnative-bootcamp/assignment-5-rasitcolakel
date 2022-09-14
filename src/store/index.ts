@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import { genresSlice } from './slices/genres';
 import { playlistsSlice } from './slices/playlists';
+import { searchSlice } from './slices/search';
 import { themeSlice } from './slices/theme';
 import { tracksSlice } from './slices/tracks';
 import { userSlice } from './slices/user';
@@ -15,6 +16,7 @@ const store = configureStore({
     genres: genresSlice.reducer,
     playlists: playlistsSlice.reducer,
     tracks: tracksSlice.reducer,
+    search: searchSlice.reducer,
   },
   // devtools is enabled by default in development mode
   devTools: true,

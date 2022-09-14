@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const CustomInputStyles = StyleSheet.create({
   container: {
-    width: '100%',
+    flex: 1,
     alignItems: 'center',
     borderRadius: 5,
     borderWidth: 1,

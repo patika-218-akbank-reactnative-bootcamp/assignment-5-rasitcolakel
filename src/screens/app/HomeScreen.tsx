@@ -48,6 +48,9 @@ export default function HomeScreen({ navigation }: Props) {
     );
   };
   const loadMore = async () => {
+    if (!next) {
+      return;
+    }
     const newTracks = await searchFromUrl<Track>(next);
     dispatch(setTracks(newTracks));
   };

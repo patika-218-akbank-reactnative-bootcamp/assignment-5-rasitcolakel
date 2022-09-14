@@ -17,19 +17,19 @@ type SearchType =
   | 'track'
   | 'user';
 type SearchProps = {
-  type: SearchType;
+  type?: SearchType;
   q?: string;
   limit?: number;
 };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export async function search<T>({ type, q, limit }: SearchProps): Promise<SearchResponse<T>> {
-  console.log('search', type, q, limit);
   const params = new URLSearchParams();
   params.append('q', q || 'a');
   params.append('limit', (limit || 10).toString());
+  const search = `search${type ? '/' + type : ''}?`;
   const request = await axios.get<SearchResponse<T>>(
-    `${config.SONG_API_URL}search/${type}?${params.toString()}`,
+    `${config.SONG_API_URL}${search}${params.toString()}`,
   );
   await sleep(1000);
   return request.data;
