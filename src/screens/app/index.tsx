@@ -5,13 +5,16 @@ import BottomTabs from '@src/screens/app/BottomTabs';
 import { useAppDispatch } from '@src/store';
 import { setGenres } from '@src/store/slices/genres';
 import { fetchPlaylists } from '@src/store/slices/playlists';
-import { fetchTracks, setTracks } from '@src/store/slices/tracks';
-import { Track } from '@src/types/APITypes';
-import { getGenres, search } from '@src/utils/api';
+import { fetchTracks } from '@src/store/slices/tracks';
+import { Playlist } from '@src/types/APITypes';
+import { getGenres } from '@src/utils/api';
 import React, { useEffect } from 'react';
+
+import PlaylistDetailScreen from './PlaylistDetailScreen';
 
 export type AppStackParamsList = {
   BottomTabs: NavigatorScreenParams<BottomTabParamList>;
+  PlaylistDetail: { playlist: Playlist } | undefined;
 };
 
 export type BottomTabParamList = {
@@ -66,6 +69,7 @@ const AppStack = () => {
         headerShown: false,
       }}>
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
+      <Stack.Screen name="PlaylistDetail" component={PlaylistDetailScreen} />
     </Stack.Navigator>
   );
 };

@@ -4,6 +4,7 @@ import CustomInput from '@src/components/CustomInput';
 import CustomSafeAreaView from '@src/components/CustomSafeAreaView';
 import CustomText from '@src/components/CustomText';
 import TrackSkeleton from '@src/components/TrackSkeleton';
+import renderTrack from '@src/components/renderTrack';
 import { useAppDispatch, useAppSelector } from '@src/store';
 import {
   clearSearch,
@@ -133,37 +134,13 @@ const SearchView = () => {
     const newTracks = await searchFromUrl<Track | Album | Artist>(next);
     dispatch(setTracks(newTracks));
   };
-  const emptyData = Array.from({ length: 10 }, (_, i) => i);
-
-  const renderItem = ({ item }: { item: Track | any }) => {
-    if (typeof item === 'number') return <TrackSkeleton />;
-    return (
-      <View style={styles.trackItemContainer}>
-        <Image style={styles.tracktItemImage} uri={`${item.album.cover}`} />
-        <View style={styles.trackItem}>
-          <CustomText title={item.title} style={styles.trackItemTitle} />
-          <CustomText title={item.artist.name} style={styles.trackItemTitle} variant="secondary" />
-        </View>
-        <Foundation
-          name="play"
-          size={24}
-          color={colors.primary}
-          style={[
-            styles.trackItemIcon,
-            {
-              backgroundColor: hexToRGB(colors.primary, 0.2),
-            },
-          ]}
-        />
-      </View>
-    );
-  };
+  const emptyData = Array.from({ length: 30 }, (_, i) => i);
 
   return (
     <View style={styles.container}>
       <FlatList
         data={loading ? emptyData : data}
-        renderItem={renderItem}
+        renderItem={renderTrack}
         keyExtractor={(item) => (item.id || item).toString()}
         showsHorizontalScrollIndicator={false}
         onEndReached={() => loadMore()}

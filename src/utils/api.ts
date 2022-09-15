@@ -1,4 +1,4 @@
-import { GenresResponse, SearchResponse } from '@src/types/APITypes';
+import { GenresResponse, PlaylistScreen, SearchResponse } from '@src/types/APITypes';
 import axios from 'axios';
 
 import { config } from './config';
@@ -37,5 +37,10 @@ export async function search<T>({ type, q, limit }: SearchProps): Promise<Search
 
 export async function searchFromUrl<T>(url: string): Promise<SearchResponse<T>> {
   const request = await axios.get<SearchResponse<T>>(url);
+  return request.data;
+}
+
+export async function fetchPlaylist(id: number): Promise<PlaylistScreen> {
+  const request = await axios.get<PlaylistScreen>(`${config.SONG_API_URL}playlist/${id}`);
   return request.data;
 }

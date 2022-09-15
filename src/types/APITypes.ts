@@ -95,3 +95,34 @@ export interface Album {
   tracklist: string;
   type: string;
 }
+
+export interface PlaylistScreen {
+  id: number;
+  title: string;
+  description: string;
+  duration: number;
+  public: boolean;
+  is_loved_track: boolean;
+  collaborative: boolean;
+  nb_tracks: number;
+  fans: number;
+  link: string;
+  share: string;
+  picture: string;
+  picture_small: string;
+  picture_medium: string;
+  picture_big: string;
+  picture_xl: string;
+  checksum: string;
+  tracklist: string;
+  creation_date: string;
+  md5_image: string;
+  picture_type: string;
+  type: string;
+  tracks: PlaylistScreenTracks;
+}
+
+export interface PlaylistScreenTracks {
+  data: Track[];
+  checksum: string;
+}
