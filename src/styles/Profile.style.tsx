@@ -25,4 +25,9 @@ export const ProfileScreenStyle = StyleSheet.create({
     marginLeft: 'auto',
     fontSize: 30,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    margin: 10,
+  },
 });

@@ -6,7 +6,6 @@ import { playTrack, stopTrack } from '@src/store/slices/player';
 import { likeTrack } from '@src/store/slices/user';
 import { PlaylistDetailStyles as styles } from '@src/styles/PlaylistDetail.style';
 import { Track } from '@src/types/APITypes';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';

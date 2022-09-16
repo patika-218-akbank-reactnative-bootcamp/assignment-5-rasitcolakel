@@ -7,9 +7,9 @@ import { useAppDispatch } from '@src/store';
 import { setGenres } from '@src/store/slices/genres';
 import { fetchPlaylists } from '@src/store/slices/playlists';
 import { fetchTracks } from '@src/store/slices/tracks';
-import { UserState, fetchLikedTracks, setLikedTracks, setUser } from '@src/store/slices/user';
+import { UserState, fetchLikedTracks, setUser } from '@src/store/slices/user';
 import { Playlist } from '@src/types/APITypes';
-import { getGenres, getLikedTracks } from '@src/utils/api';
+import { getGenres } from '@src/utils/api';
 import { auth } from '@src/utils/firebase';
 import React, { useEffect } from 'react';
 

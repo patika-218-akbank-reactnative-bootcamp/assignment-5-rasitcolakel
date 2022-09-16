@@ -1,20 +1,33 @@
-import { Foundation } from '@expo/vector-icons';
+import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '@src/store';
 import { setPlaying } from '@src/store/slices/player';
+import { likeTrack } from '@src/store/slices/user';
 import { PlaylistStyles as styles } from '@src/styles/Player.style';
 import { hexToRGB } from '@src/utils/utils';
-import { Audio } from 'expo-av';
+import { AVPlaybackStatusSuccess, Audio } from 'expo-av';
+import { Sound } from 'expo-av/build/Audio';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, TouchableOpacity, View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CustomText from './CustomText';
 
-// create a custom animated component
-
 const Player = () => {
+  const [seconds, setSeconds] = React.useState({
+    current: 0,
+    total: 0,
+  });
+  const [intervalId, setIntervalId] = React.useState<any>(0);
+  const [duration, setDuration] = React.useState(0);
+
   const [isGrid, setIsGrid] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
@@ -22,21 +35,55 @@ const Player = () => {
   const { playingTrack, playing, downloading, uri, height, routeName } = useAppSelector(
     (state) => state.player,
   );
+  const likedTracks = useAppSelector((state) => state.user.user.likedTracks);
 
-  const [sound, setSound] = React.useState<any>();
+  const isLiked =
+    likedTracks && playingTrack && likedTracks.find((track) => track.id === playingTrack.id);
+
+  const [sound, setSound] = React.useState<Sound>();
+
+  useEffect(() => {
+    cancelAnimation(player);
+    if (!playingTrack || duration === 0) {
+      player.value = withTiming(0, { duration: 1000 });
+      return;
+    }
+    setSeconds({
+      current: 0,
+      total: Math.ceil(duration / 1000),
+    });
+    player.value = withTiming(0, { duration: 1000 }, () => {
+      player.value = withTiming(100, { duration });
+    });
+    const intervalId = setInterval(() => {
+      setSeconds((prev) => ({
+        ...prev,
+        current: prev.current + 1,
+      }));
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [playing, playingTrack, duration]);
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync({
       uri,
     });
     setSound(sound);
-    console.log('Playing Sound');
+
+    sound?.getStatusAsync().then((status: AVPlaybackStatusSuccess) => {
+      setDuration(status.playableDurationMillis);
+    });
     await sound.playAsync();
   }
 
   async function pauseSound() {
     console.log('Pausing Sound');
-    await sound.pauseAsync();
+    player.value = withTiming(0, { duration: 1000 });
+    // we need to check if the sound is loaded before pausing it
+    if (sound._loaded) {
+      await sound.pauseAsync();
+    }
   }
 
   useEffect(() => {
@@ -46,12 +93,15 @@ const Player = () => {
     return sound
       ? () => {
           console.log('Unloading Sound');
-          sound.unloadAsync();
+          if (sound) {
+            sound.unloadAsync();
+          }
         }
       : undefined;
   }, [sound]);
 
   useEffect(() => {
+    console.log('playing', playing, sound);
     if (playing) {
       playSound();
     } else {
@@ -76,9 +126,138 @@ const Player = () => {
   };
 
   const offset = useSharedValue(-1);
+  const player = useSharedValue(3);
+  console.log('Player Value', player.value);
+
+  const handleLike = () => {
+    dispatch(likeTrack(playingTrack));
+  };
+
+  const playerStyle = useAnimatedStyle(() => {
+    return {
+      width: player.value + '%',
+    };
+  });
+
+  const renderPlayerFullScreen = () => (
+    <View
+      style={[
+        styles.fullScreenPlayerContainer,
+        {
+          top: insets.top,
+          marginBottom: insets.bottom,
+          paddingHorizontal: 20,
+        },
+      ]}>
+      <View style={styles.fullScreenHeader}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            offset.value = withTiming(
+              -1,
+              {
+                duration: 300,
+              },
+              /**
+               * It will be called when the animation is finished 🏁
+               */
+              () => {
+                setIsGrid(true);
+              },
+            );
+          }}>
+          <MaterialCommunityIcons name="chevron-down" size={34} color={colors.white} />
+        </TouchableOpacity>
+
+        <CustomText
+          style={[
+            {
+              color: colors.white,
+            },
+            styles.fullScreenHeaderTitle,
+          ]}
+          title=""
+        />
+      </View>
+      <View style={styles.fullScreenPlayerImageContainer}>
+        <Image
+          style={[styles.fullScreenPlayerImage]}
+          uri={playingTrack.album.cover_xl}
+          preview={{
+            uri: playingTrack.album.cover_xl,
+          }}
+        />
+      </View>
+
+      <View style={styles.trackDetailContainer}>
+        <View style={styles.trackDetailItem}>
+          <View style={[styles.columnedContainer]}>
+            <CustomText
+              title={playingTrack.title}
+              style={{
+                paddingBottom: 10,
+              }}
+              size="large"
+            />
+            <CustomText title={playingTrack.artist.name} variant="secondary" />
+          </View>
+          <View>
+            <MaterialCommunityIcons
+              name={isLiked ? 'heart' : 'heart-outline'}
+              size={35}
+              color="#1DB954"
+              onPress={handleLike}
+            />
+          </View>
+        </View>
+      </View>
+      <View style={styles.trackDetailItem}>
+        <View style={[styles.durationContainer]}>
+          <View
+            style={{
+              height: 7,
+              backgroundColor: colors.white,
+              borderRadius: 5,
+            }}>
+            <Animated.View
+              style={[
+                {
+                  height: 7,
+                  backgroundColor: colors.primary,
+                  borderRadius: 5,
+                  alignItems: 'flex-end',
+                },
+                playerStyle,
+              ]}>
+              <View
+                style={[
+                  {
+                    height: 15,
+                    width: 15,
+                    backgroundColor: colors.primary,
+                    borderRadius: 15,
+                    bottom: 4,
+                  },
+                ]}
+              />
+            </Animated.View>
+          </View>
+        </View>
+      </View>
+      <View style={styles.trackDetailContainer}>
+        <View style={styles.trackDetailItem}>
+          <View style={[styles.columnedContainer]}>
+            <CustomText title={seconds.current.toString()} variant="secondary" />
+          </View>
+          <View>
+            <CustomText title={seconds.total.toString()} variant="secondary" />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
 
   const animatedContainer = useAnimatedStyle(() => {
-    console.log('offset.value', offset.value);
     if (offset.value >= 0) {
       return {
         bottom: withTiming(0, {
@@ -101,9 +280,7 @@ const Player = () => {
     };
   });
 
-  console.log('setIsGrid', isGrid);
   if (!playingTrack) return null;
-  console.log('offset.value');
   return (
     <Animated.ScrollView
       style={[
@@ -162,7 +339,26 @@ const Player = () => {
           )}
         </TouchableOpacity>
       ) : (
-        <Text>13123</Text>
+        renderPlayerFullScreen()
+      )}
+
+      {isGrid && (
+        <View
+          style={{
+            height: 4,
+            backgroundColor: colors.white,
+          }}>
+          <Animated.View
+            style={[
+              {
+                height: 4,
+                backgroundColor: colors.primary,
+                alignItems: 'flex-end',
+              },
+              playerStyle,
+            ]}
+          />
+        </View>
       )}
     </Animated.ScrollView>
   );

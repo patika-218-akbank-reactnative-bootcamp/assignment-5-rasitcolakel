@@ -2,10 +2,11 @@ import { Feather } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import CustomSafeAreaView from '@src/components/CustomSafeAreaView';
 import CustomText from '@src/components/CustomText';
+import RenderTrack from '@src/components/renderTrack';
 import { useAppSelector } from '@src/store';
 import { ProfileScreenStyle as styles } from '@src/styles/Profile.style';
 import React from 'react';
-import { Image, View } from 'react-native';
+import { FlatList, Image, View } from 'react-native';
 
 import { ProfileScreenParamsList } from '..';
 
@@ -30,6 +31,14 @@ const ProfileScreen = ({ navigation }: Props) => {
           style={[styles.icon, { color: colors.primary }]}
         />
       </View>
+      <CustomText title="Liked Tracks" size="large" style={styles.title} />
+      <FlatList
+        data={user.likedTracks}
+        renderItem={({ item }) => <RenderTrack item={item} loading={false} />}
+        keyExtractor={(item) => (item.id || item).toString()}
+        showsHorizontalScrollIndicator={false}
+        maxToRenderPerBatch={10}
+      />
     </CustomSafeAreaView>
   );
 };
