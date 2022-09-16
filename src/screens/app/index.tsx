@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Player from '@src/components/Player';
 import BottomTabs from '@src/screens/app/BottomTabs';
 import { useAppDispatch } from '@src/store';
 import { setGenres } from '@src/store/slices/genres';
@@ -42,6 +43,7 @@ const AppStack = () => {
       console.log('e', error);
     }
   };
+
   const initPlaylists = async () => {
     try {
       dispatch(fetchPlaylists());
@@ -64,13 +66,16 @@ const AppStack = () => {
   }, []);
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <Stack.Screen name="BottomTabs" component={BottomTabs} />
-      <Stack.Screen name="PlaylistDetail" component={PlaylistDetailScreen} />
-    </Stack.Navigator>
+    <>
+      <Player />
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="BottomTabs" component={BottomTabs} />
+        <Stack.Screen name="PlaylistDetail" component={PlaylistDetailScreen} />
+      </Stack.Navigator>
+    </>
   );
 };
 

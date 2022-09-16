@@ -4,6 +4,22 @@ export const PlaylistDetailStyles = StyleSheet.create({
   headerContainer: {
     alignItems: 'center',
   },
+  listHeaderContainer: {
+    paddingVertical: 15,
+  },
+  listHeaderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 5,
+  },
+  listHeaderItemIcon: {
+    marginRight: 10,
+  },
+  skeletonText: {
+    height: 20,
+    width: 200,
+  },
   headerContainerView: {
     display: 'flex',
     flexDirection: 'row',
@@ -48,7 +64,6 @@ export const PlaylistDetailStyles = StyleSheet.create({
   trackItemIcon: {
     height: 35,
     width: 35,
-    padding: 5,
-    paddingHorizontal: 10,
+    margin: 5,
   },
 });

@@ -1,10 +1,9 @@
-import { AntDesign, Foundation } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import CustomInput from '@src/components/CustomInput';
 import CustomSafeAreaView from '@src/components/CustomSafeAreaView';
 import CustomText from '@src/components/CustomText';
-import TrackSkeleton from '@src/components/TrackSkeleton';
-import renderTrack from '@src/components/renderTrack';
+import RenderTrack from '@src/components/renderTrack';
 import { useAppDispatch, useAppSelector } from '@src/store';
 import {
   clearSearch,
@@ -16,7 +15,6 @@ import {
 import { SearchScreenStyle as styles } from '@src/styles/Search.style';
 import { Album, Artist, Track } from '@src/types/APITypes';
 import { searchFromUrl } from '@src/utils/api';
-import { hexToRGB } from '@src/utils/utils';
 import React, { useLayoutEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
@@ -134,13 +132,14 @@ const SearchView = () => {
     const newTracks = await searchFromUrl<Track | Album | Artist>(next);
     dispatch(setTracks(newTracks));
   };
-  const emptyData = Array.from({ length: 30 }, (_, i) => i);
-
+  const emptyData = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+  }));
   return (
     <View style={styles.container}>
       <FlatList
         data={loading ? emptyData : data}
-        renderItem={renderTrack}
+        renderItem={({ item }) => <RenderTrack item={item} loading={loading} />}
         keyExtractor={(item) => (item.id || item).toString()}
         showsHorizontalScrollIndicator={false}
         onEndReached={() => loadMore()}

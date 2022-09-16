@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import CustomText from '@src/components/CustomText';
 import PlaylistSkeleton from '@src/components/PlaylistSkeleton';
-import renderTrack from '@src/components/renderTrack';
+import RenderTrack from '@src/components/renderTrack';
 import { AppStackParamsList } from '@src/screens/app';
 import { useAppSelector } from '@src/store';
+import { setHeight } from '@src/store/slices/player';
 import { setTracks } from '@src/store/slices/tracks';
 import { HomeStyles as styles } from '@src/styles/Home.style';
 import { Playlist, Track } from '@src/types/APITypes';
 import { searchFromUrl } from '@src/utils/api';
 import { hexToRGB } from '@src/utils/utils';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -19,8 +21,12 @@ import { useDispatch } from 'react-redux';
 type Props = NativeStackScreenProps<AppStackParamsList, 'BottomTabs'>;
 
 export default function HomeScreen({ navigation }: Props) {
+  const bottomTabsHeight = useBottomTabBarHeight();
+
   const { next, data, loading } = useAppSelector((state) => state.tracks);
-  const emptyData = Array.from({ length: 30 }, (_, i) => i);
+  const emptyData = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+  }));
   const dispatch = useDispatch();
 
   const loadMore = async () => {
@@ -35,6 +41,10 @@ export default function HomeScreen({ navigation }: Props) {
     navigation.navigate('PlaylistDetail', { playlist });
   };
 
+  useEffect(() => {
+    dispatch(setHeight(bottomTabsHeight));
+  }, [bottomTabsHeight]);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -46,7 +56,7 @@ export default function HomeScreen({ navigation }: Props) {
           </>
         }
         data={loading ? emptyData : data}
-        renderItem={renderTrack}
+        renderItem={({ item }) => <RenderTrack item={item} loading={loading} />}
         keyExtractor={(item) => (item.id || item).toString()}
         showsHorizontalScrollIndicator={false}
         onEndReached={() => loadMore()}

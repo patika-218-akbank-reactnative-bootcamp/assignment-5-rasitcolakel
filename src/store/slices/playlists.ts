@@ -41,6 +41,9 @@ export const playlistsSlice = createSlice({
       state.total = action.payload.total;
       state.next = action.payload.next;
     },
+    initialisePlaylistScreen: (state) => {
+      state.playlistScreen = initialState.playlistScreen;
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -63,6 +66,7 @@ export const playlistsSlice = createSlice({
       })
       .addCase(getPlaylist.pending, (state) => {
         state.playlistScreen.loading = true;
+        state.playlistScreen.playlist = null;
       })
       .addCase(getPlaylist.fulfilled, (state, action: PayloadAction<PlaylistScreen>) => {
         // Add user to the state array
@@ -75,6 +79,6 @@ export const playlistsSlice = createSlice({
   },
 });
 
-export const { setPlaylists } = playlistsSlice.actions;
+export const { setPlaylists, initialisePlaylistScreen } = playlistsSlice.actions;
 
 export default playlistsSlice.reducer;

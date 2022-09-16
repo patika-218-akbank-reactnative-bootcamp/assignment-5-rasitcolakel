@@ -1,3 +1,5 @@
+import { NavigationState, PartialState } from '@react-navigation/native';
+
 // this function takes a string and returns a string for converting hex to rgb or rgba
 export const hexToRGB = (hex: string, alpha = 1): string => {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -10,3 +12,19 @@ export const hexToRGB = (hex: string, alpha = 1): string => {
 
   return `rgb(${r}, ${g}, ${b})`;
 };
+
+export function getActiveRouteName(
+  state: NavigationState | PartialState<NavigationState> | undefined,
+): string {
+  if (!state || typeof state.index !== 'number') {
+    return 'Unknown';
+  }
+
+  const route = state.routes[state.index];
+
+  if (route.state) {
+    return getActiveRouteName(route.state);
+  }
+
+  return route.name;
+}
