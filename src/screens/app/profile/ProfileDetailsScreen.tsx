@@ -4,6 +4,8 @@ import CustomText from '@src/components/CustomText';
 import { useAppSelector } from '@src/store';
 import { logOut } from '@src/store/slices/user';
 import { ProfileDetailsScreenStyle as styles } from '@src/styles/ProfileDetails.style';
+import { app, auth } from '@src/utils/firebase';
+import * as SecureStore from 'expo-secure-store';
 import React from 'react';
 import { Image, View } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -23,6 +25,18 @@ const ProfileDetailsScreen = ({ navigation }: Props) => {
     name === 'dark'
       ? require('../../../assets/user-dark.png')
       : require('../../../assets/user-light.png');
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      // signed out
+      await SecureStore.deleteItemAsync('user');
+      dispatch(logOut());
+    } catch (e) {
+      // an error
+      console.log(e);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -43,12 +57,7 @@ const ProfileDetailsScreen = ({ navigation }: Props) => {
           size="medium"
         />
       </View>
-      <CustomButton
-        title="Sign Out"
-        onPress={() => dispatch(logOut())}
-        variant="transparent"
-        size="medium"
-      />
+      <CustomButton title="Sign Out" onPress={handleLogout} variant="transparent" size="medium" />
     </View>
   );
 };

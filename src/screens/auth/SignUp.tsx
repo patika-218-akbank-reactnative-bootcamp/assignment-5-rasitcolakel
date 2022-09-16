@@ -7,6 +7,7 @@ import { AuthStackParamsList } from '@src/screens/auth/';
 import { useAppSelector } from '@src/store';
 import { UserState, setUser } from '@src/store/slices/user';
 import { AuthStyle as styles } from '@src/styles/Auth.style';
+import { saveUserToFirestore } from '@src/utils/api';
 import { auth } from '@src/utils/firebase';
 import * as SecureStore from 'expo-secure-store';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -44,6 +45,8 @@ const SignUp = ({ navigation }: Props) => {
       await updateProfile(auth.currentUser, { displayName }).then(() => {
         console.log('update successful');
       });
+      const savedUser = await saveUserToFirestore(user);
+      console.log(savedUser);
       const userData: UserState = {
         user: {
           id: user.user.uid,
@@ -52,6 +55,7 @@ const SignUp = ({ navigation }: Props) => {
         },
         accessToken: user.user.refreshToken,
       };
+
       dispatch(setUser(userData));
       // save user to db
       await SecureStore.setItemAsync('user', JSON.stringify(userData));

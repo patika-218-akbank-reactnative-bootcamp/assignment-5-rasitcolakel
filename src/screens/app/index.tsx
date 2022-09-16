@@ -7,8 +7,10 @@ import { useAppDispatch } from '@src/store';
 import { setGenres } from '@src/store/slices/genres';
 import { fetchPlaylists } from '@src/store/slices/playlists';
 import { fetchTracks } from '@src/store/slices/tracks';
+import { UserState, fetchLikedTracks, setLikedTracks, setUser } from '@src/store/slices/user';
 import { Playlist } from '@src/types/APITypes';
-import { getGenres } from '@src/utils/api';
+import { getGenres, getLikedTracks } from '@src/utils/api';
+import { auth } from '@src/utils/firebase';
 import React, { useEffect } from 'react';
 
 import PlaylistDetailScreen from './PlaylistDetailScreen';
@@ -44,6 +46,14 @@ const AppStack = () => {
     }
   };
 
+  const initLikedTracks = async () => {
+    try {
+      dispatch(fetchLikedTracks());
+    } catch (error: any) {
+      console.log('e', error);
+    }
+  };
+
   const initPlaylists = async () => {
     try {
       dispatch(fetchPlaylists());
@@ -63,6 +73,24 @@ const AppStack = () => {
     initGenres();
     initPlaylists();
     initTracks();
+  }, []);
+
+  useEffect(() => {
+    const subscriber = auth.onAuthStateChanged((user) => {
+      if (user) {
+        const userData: UserState = {
+          user: {
+            id: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+          },
+          accessToken: user.refreshToken,
+        };
+        initLikedTracks();
+        dispatch(setUser(userData));
+      }
+    });
+    return subscriber;
   }, []);
 
   return (
