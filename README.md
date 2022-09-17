@@ -30,7 +30,17 @@ This project is a simple music player. It has a list of songs and a player scree
 
 ### Storing data
 
-When a user registers, the data is stored in Firebase. When a user logs in, the user's data is retrieved from Firebase. I fetch the tracks, playlists, and albums from [Deezer Api](https://developers.deezer.com/api) and store them the redux store. When a user likes a song, the song is stored in the user's data in Firebase. When a user logs in, the liked songs are retrieved from Firebase and stored in the redux store.
+When a user registers, the data is stored in Firebase. When a user logs in, the user's data is retrieved from Firebase. I fetch the tracks, playlists, and albums from [Deezer Api](https://developers.deezer.com/api) and store them the redux store. When a user likes a song, the song is stored in the user's data in Firebase. When a user logs in, the liked songs are retrieved from Firebase and stored in the redux store. There is an illustration of the flow below.
+
+<img src="./screenshots/Schema.png" width="600px">
+
+### **Users Collection**
+
+<img src="./screenshots/usersCollection.png" width="600px">
+
+### **LikedTracks Collection**
+
+<img src="./screenshots/likedTracks.png" width="600px">
 
 # Previews
 
