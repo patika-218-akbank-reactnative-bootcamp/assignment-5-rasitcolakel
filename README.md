@@ -44,11 +44,11 @@ When a user registers, the data is stored in Firebase. When a user logs in, the 
 
 # Previews
 
-**(Animated)** Audio Player And Animations
+**(Animated)** Audio Player And Animations [Preview](./screenshots/dark/player.gif)
 
 <img src="./screenshots/dark/player.gif" width="300px">
 
-**(Animated)** Playlist Screen
+**(Animated)** Playlist Screen [Preview](./screenshots/dark/playlist.gif)
 
 <img src="./screenshots/dark/playlist.gif" width="300px">
 
@@ -60,11 +60,11 @@ Search Screen
 
 <img src="./screenshots/dark/search.png" width="300px">
 
-**(Animated)** Search Screen
+**(Animated)** Search Screen [Preview](./screenshots/dark/search.gif)
 
 <img src="./screenshots/dark/search.gif" width="300px">
 
-**(Animated)** Genres Screen
+**(Animated)** Genres Screen [Preview](./screenshots/dark/genres.gif)
 
 <img src="./screenshots/dark/genres.gif" width="300px">
 
