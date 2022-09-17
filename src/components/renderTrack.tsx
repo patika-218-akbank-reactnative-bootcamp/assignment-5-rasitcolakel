@@ -43,26 +43,28 @@ const RenderTrack = ({ item, loading }: Props) => {
   };
 
   return (
-    <TouchableOpacity style={styles.trackItemContainer} onPress={handlePlay}>
+    <TouchableOpacity style={styles.trackItemContainer} onLongPress={handlePlay}>
       <Image style={styles.tracktItemImage} uri={`${item.album.cover}`} />
       <View style={styles.trackItem}>
         <CustomText title={item.title} style={styles.trackItemTitle} />
         <CustomText title={item.artist.name} style={styles.trackItemTitle} variant="secondary" />
       </View>
-      <MaterialCommunityIcons
-        name={isLiked ? 'heart' : 'heart-outline'}
-        size={30}
-        color="#1DB954"
-        style={[styles.trackItemIcon]}
-        onPress={handleLike}
-      />
-      <MaterialCommunityIcons
-        name={playingTrack?.id === item.id ? (playing ? 'pause' : 'play') : 'play'}
-        size={30}
-        color="#1DB954"
-        style={[styles.trackItemIcon]}
-        onPress={handlePlay}
-      />
+      <TouchableOpacity style={styles.trackItemIcon} onPress={handleLike}>
+        <MaterialCommunityIcons
+          name={isLiked ? 'heart' : 'heart-outline'}
+          size={30}
+          color="#1DB954"
+          style={[styles.trackItemIcon]}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.trackItemIcon} onPress={handlePlay}>
+        <MaterialCommunityIcons
+          name={playingTrack?.id === item.id ? (playing ? 'pause' : 'play') : 'play'}
+          size={30}
+          color="#1DB954"
+          style={[styles.trackItemIcon]}
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };

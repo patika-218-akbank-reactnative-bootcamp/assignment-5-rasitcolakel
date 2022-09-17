@@ -33,7 +33,7 @@ export default function SearchScreen({ navigation }: Props) {
   const search = useAppSelector((state) => state.search.search);
   const isSearching = useAppSelector((state) => state.search.isSearching);
   const colors = useAppSelector((state) => state.theme.colors);
-
+  console.log('isSearching', isSearching);
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: !isSearching });
   }, [isSearching]);
@@ -64,7 +64,13 @@ export default function SearchScreen({ navigation }: Props) {
   return (
     <CustomSafeAreaView>
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              width: !isSearching ? '100%' : '80%',
+            },
+          ]}>
           <CustomInput
             ref={inputRef}
             placeholder="Search"

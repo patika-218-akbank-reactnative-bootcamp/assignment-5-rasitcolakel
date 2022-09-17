@@ -11,7 +11,6 @@ import { ActivityIndicator, Dimensions, TouchableOpacity, View } from 'react-nat
 import { Image } from 'react-native-expo-image-cache';
 import Animated, {
   cancelAnimation,
-  color,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -189,13 +188,17 @@ const Player = () => {
         />
       </View>
       <View style={styles.trackDetailContainer}>
-        <View style={styles.trackDetailItem}>
-          <MaterialCommunityIcons
-            name={isLiked ? 'heart' : 'heart-outline'}
-            size={35}
-            color="#1DB954"
-            onPress={handleLike}
-          />
+        <View style={[styles.trackDetailItem, { paddingBottom: 20 }]}>
+          {!downloading ? (
+            <Foundation
+              name={playing ? 'pause' : 'play'}
+              size={45}
+              color="#1DB954"
+              onPress={onTrackActivity}
+            />
+          ) : (
+            <ActivityIndicator size="small" color={colors.primary} style={styles.trackItemIcon} />
+          )}
         </View>
       </View>
       <View style={styles.trackDetailContainer}>

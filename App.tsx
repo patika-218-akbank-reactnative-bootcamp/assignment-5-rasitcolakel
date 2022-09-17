@@ -6,7 +6,7 @@ import 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 
-LogBox.ignoreLogs(['Sending `expo-file-system.downloadProgress` with no listeners registered.']);
+LogBox.ignoreAllLogs();
 const App = () => {
   return (
     <SafeAreaProvider>
