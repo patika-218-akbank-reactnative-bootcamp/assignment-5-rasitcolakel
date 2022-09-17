@@ -5,8 +5,10 @@ import CustomText from '@src/components/CustomText';
 import Skeleton from '@src/components/Skeleton';
 import RenderTrack from '@src/components/renderTrack';
 import { useAppDispatch, useAppSelector } from '@src/store';
-import { getPlaylist } from '@src/store/slices/playlists';
+import { fetchTracksFromArtist, setArtistTracks } from '@src/store/slices/artists';
 import { PlaylistDetailStyles as styles } from '@src/styles/PlaylistDetail.style';
+import { Track } from '@src/types/APITypes';
+import { searchFromUrl } from '@src/utils/api';
 import React, { useEffect } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
@@ -15,29 +17,24 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppStackParamsList } from '.';
 
-type Props = NativeStackScreenProps<AppStackParamsList, 'PlaylistDetail'>;
+type Props = NativeStackScreenProps<AppStackParamsList, 'ArtistDetail'>;
 const HEIGHT = Dimensions.get('window').width * 0.6;
 
-const secToHourString = (min: number) => {
-  const hours = Math.floor(min / 60 / 60);
-  const minutes = min % 60;
-  return `${hours}h ${minutes}m`;
-};
-
-const PlaylistDetailScreen = ({ route, navigation }: Props) => {
+const ArtistDetailScreen = ({ route, navigation }: Props) => {
   const dispatch = useAppDispatch();
   const emptyData = Array.from({ length: 30 }, (_, i) => ({
     id: i,
   }));
-  const data = useAppSelector((state) => state.playlists.playlistScreen.playlist?.tracks.data);
-  const loading = useAppSelector((state) => state.playlists.playlistScreen.loading);
-  const playlist = useAppSelector((state) => state.playlists.playlistScreen.playlist);
+  const data = useAppSelector((state) => state.artists.artistScreen.data);
+  const loading = useAppSelector((state) => state.artists.artistScreen.loading);
+  const artist = useAppSelector((state) => state.artists.artistScreen.artist);
+  const next = useAppSelector((state) => state.artists.artistScreen.next);
   const colors = useAppSelector((state) => state.theme.colors);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    const { playlist } = route.params;
-    dispatch(getPlaylist(playlist.id));
+    const { artist } = route.params;
+    dispatch(fetchTracksFromArtist(artist));
   }, []);
 
   const offset = useSharedValue(0);
@@ -68,7 +65,13 @@ const PlaylistDetailScreen = ({ route, navigation }: Props) => {
       offset.value = 0;
     }
   };
-
+  const loadMore = async () => {
+    if (!next) {
+      return;
+    }
+    const newTracks = await searchFromUrl<Track>(next);
+    dispatch(setArtistTracks(newTracks));
+  };
   return (
     <CustomSafeAreaView>
       <View>
@@ -86,59 +89,32 @@ const PlaylistDetailScreen = ({ route, navigation }: Props) => {
               color={colors.primary}
               onPress={() => navigation.goBack()}
             />
-            {(playlist || !loading) && (
+            {(artist || !loading) && (
               <Animated.Text
                 style={[styles.headerText, animatedTextStyles, { color: colors.text }]}
                 numberOfLines={1}>
-                {playlist.title}
+                {artist.name}
               </Animated.Text>
             )}
           </View>
           <Animated.View style={[styles.imageAnimationStyle, animatedImageStyles]}>
-            {!playlist ? (
+            {!artist ? (
               <Skeleton variant="rect" style={styles.image} />
             ) : (
               <Image
-                uri={playlist.picture_xl}
+                uri={artist.picture_xl}
                 style={styles.image}
-                preview={{ uri: playlist.picture_small }}
+                preview={{ uri: artist.picture_small }}
               />
             )}
           </Animated.View>
         </View>
         <FlatList
           ListHeaderComponent={
-            playlist || !loading ? (
+            artist || !loading ? (
               <View style={styles.listHeaderContainer}>
                 <View style={styles.listHeaderItem}>
-                  <CustomText title={`${playlist.description}`} variant="secondary" />
-                </View>
-                <View style={styles.listHeaderItem}>
-                  <MaterialCommunityIcons
-                    name="heart-outline"
-                    size={24}
-                    color={colors.secondaryText}
-                    style={styles.listHeaderItemIcon}
-                  />
-                  <CustomText title={`${playlist.fans} likes`} variant="secondary" />
-                </View>
-                <View style={styles.listHeaderItem}>
-                  <MaterialCommunityIcons
-                    name="music-note-outline"
-                    size={24}
-                    color={colors.secondaryText}
-                    style={styles.listHeaderItemIcon}
-                  />
-                  <CustomText title={`${playlist.nb_tracks} tracks`} variant="secondary" />
-                </View>
-                <View style={styles.listHeaderItem}>
-                  <MaterialCommunityIcons
-                    name="clock-outline"
-                    size={24}
-                    color={colors.secondaryText}
-                    style={styles.listHeaderItemIcon}
-                  />
-                  <CustomText title={secToHourString(playlist.duration)} variant="secondary" />
+                  <CustomText title={`${artist.name}`} variant="secondary" />
                 </View>
               </View>
             ) : (
@@ -146,20 +122,18 @@ const PlaylistDetailScreen = ({ route, navigation }: Props) => {
                 <View style={styles.listHeaderItem}>
                   <Skeleton variant="rect" style={styles.skeletonText} />
                 </View>
-                <View style={styles.listHeaderItem}>
-                  <Skeleton variant="rect" style={styles.skeletonText} />
-                </View>
-                <View style={styles.listHeaderItem}>
-                  <Skeleton variant="rect" style={styles.skeletonText} />
-                </View>
               </View>
             )
           }
-          data={(loading && data === undefined) || playlist === null ? emptyData : data}
+          data={(loading && data === undefined) || artist === null ? emptyData : data}
           renderItem={({ item }) => <RenderTrack item={item} loading={loading} />}
           keyExtractor={(item) => (item.id || item).toString()}
           showsHorizontalScrollIndicator={false}
+          maxToRenderPerBatch={10}
           onScroll={onScroll}
+          onEndReachedThreshold={0.5}
+          initialNumToRender={10}
+          onEndReached={loadMore}
           contentContainerStyle={{
             paddingBottom: insets.bottom + 20,
           }}
@@ -169,4 +143,4 @@ const PlaylistDetailScreen = ({ route, navigation }: Props) => {
   );
 };
 
-export default PlaylistDetailScreen;
+export default ArtistDetailScreen;

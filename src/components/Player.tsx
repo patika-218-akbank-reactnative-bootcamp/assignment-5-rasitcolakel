@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@src/store';
 import { setPlaying } from '@src/store/slices/player';
 import { likeTrack } from '@src/store/slices/user';
 import { PlaylistStyles as styles } from '@src/styles/Player.style';
-import { hexToRGB } from '@src/utils/utils';
+import { hexToRGB, isDetailScreen } from '@src/utils/utils';
 import { AVPlaybackStatusSuccess, Audio } from 'expo-av';
 import { Sound } from 'expo-av/build/Audio';
 import React, { useEffect } from 'react';
@@ -11,9 +11,9 @@ import { ActivityIndicator, Dimensions, TouchableOpacity, View } from 'react-nat
 import { Image } from 'react-native-expo-image-cache';
 import Animated, {
   cancelAnimation,
+  color,
   useAnimatedStyle,
   useSharedValue,
-  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,13 +25,13 @@ const Player = () => {
     current: 0,
     total: 0,
   });
-  const [intervalId, setIntervalId] = React.useState<any>(0);
   const [duration, setDuration] = React.useState(0);
 
   const [isGrid, setIsGrid] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const colors = useAppSelector((state) => state.theme.colors);
+  const themeName = useAppSelector((state) => state.theme.name);
   const { playingTrack, playing, downloading, uri, height, routeName } = useAppSelector(
     (state) => state.player,
   );
@@ -41,29 +41,6 @@ const Player = () => {
     likedTracks && playingTrack && likedTracks.find((track) => track.id === playingTrack.id);
 
   const [sound, setSound] = React.useState<Sound>();
-
-  useEffect(() => {
-    cancelAnimation(player);
-    if (!playingTrack || duration === 0) {
-      player.value = withTiming(0, { duration: 1000 });
-      return;
-    }
-    setSeconds({
-      current: 0,
-      total: Math.ceil(duration / 1000),
-    });
-    player.value = withTiming(0, { duration: 1000 }, () => {
-      player.value = withTiming(100, { duration });
-    });
-    const intervalId = setInterval(() => {
-      setSeconds((prev) => ({
-        ...prev,
-        current: prev.current + 1,
-      }));
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [playing, playingTrack, duration]);
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync({
@@ -112,7 +89,30 @@ const Player = () => {
     }
   }, [playing]);
 
-  const isInsideBottomTabs = routeName !== 'PlaylistDetail';
+  useEffect(() => {
+    cancelAnimation(player);
+    if (!playingTrack || duration === 0) {
+      player.value = withTiming(0, { duration: 1000 });
+      return;
+    }
+    setSeconds({
+      current: 0,
+      total: Math.ceil(duration / 1000),
+    });
+    player.value = withTiming(0, { duration: 1000 }, () => {
+      player.value = withTiming(100, { duration });
+    });
+    const intervalId = setInterval(() => {
+      setSeconds((prev) => ({
+        ...prev,
+        current: prev.current + 1,
+      }));
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [playing, playingTrack, duration]);
+
+  const isInsideBottomTabs = !isDetailScreen(routeName);
 
   const onTrackActivity = () => {
     if (sound) {
@@ -166,7 +166,7 @@ const Player = () => {
               },
             );
           }}>
-          <MaterialCommunityIcons name="chevron-down" size={34} color={colors.white} />
+          <MaterialCommunityIcons name="chevron-down" size={34} color={colors.primary} />
         </TouchableOpacity>
 
         <CustomText
@@ -188,7 +188,16 @@ const Player = () => {
           }}
         />
       </View>
-
+      <View style={styles.trackDetailContainer}>
+        <View style={styles.trackDetailItem}>
+          <MaterialCommunityIcons
+            name={isLiked ? 'heart' : 'heart-outline'}
+            size={35}
+            color="#1DB954"
+            onPress={handleLike}
+          />
+        </View>
+      </View>
       <View style={styles.trackDetailContainer}>
         <View style={styles.trackDetailItem}>
           <View style={[styles.columnedContainer]}>
@@ -288,7 +297,7 @@ const Player = () => {
           position: 'absolute',
           zIndex: 5,
           width: '100%',
-          backgroundColor: hexToRGB(colors.backgroundColor),
+          backgroundColor: themeName === 'dark' ? hexToRGB(colors.backgroundColor, 1) : 'white',
         },
         animatedContainer,
       ]}

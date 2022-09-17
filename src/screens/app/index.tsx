@@ -8,16 +8,20 @@ import { setGenres } from '@src/store/slices/genres';
 import { fetchPlaylists } from '@src/store/slices/playlists';
 import { fetchTracks } from '@src/store/slices/tracks';
 import { UserState, fetchLikedTracks, setUser } from '@src/store/slices/user';
-import { Playlist } from '@src/types/APITypes';
+import { Artist, Genre, Playlist } from '@src/types/APITypes';
 import { getGenres } from '@src/utils/api';
 import { auth } from '@src/utils/firebase';
 import React, { useEffect } from 'react';
 
+import ArtistDetailScreen from './ArtistDetailScreen';
+import GenreDetailScreen from './GenreDetailScreen';
 import PlaylistDetailScreen from './PlaylistDetailScreen';
 
 export type AppStackParamsList = {
   BottomTabs: NavigatorScreenParams<BottomTabParamList>;
   PlaylistDetail: { playlist: Playlist } | undefined;
+  GenreDetail: { genre: Genre } | undefined;
+  ArtistDetail: { artist: Artist } | undefined;
 };
 
 export type BottomTabParamList = {
@@ -102,6 +106,8 @@ const AppStack = () => {
         }}>
         <Stack.Screen name="BottomTabs" component={BottomTabs} />
         <Stack.Screen name="PlaylistDetail" component={PlaylistDetailScreen} />
+        <Stack.Screen name="GenreDetail" component={GenreDetailScreen} />
+        <Stack.Screen name="ArtistDetail" component={ArtistDetailScreen} />
       </Stack.Navigator>
     </>
   );

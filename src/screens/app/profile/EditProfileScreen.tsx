@@ -31,10 +31,8 @@ const EditProfileScreen = ({ navigation }: Props) => {
   const handleEditProfileScreen = async () => {
     try {
       const { displayName } = values;
-      await updateProfile(auth.currentUser, { displayName }).then(() => {
-        console.log('update successful');
-      });
-
+      await updateProfile(auth.currentUser, { displayName });
+      console.log('Buraya geldi');
       const userData: UserState = {
         user: {
           id: auth.currentUser.uid,
@@ -46,7 +44,8 @@ const EditProfileScreen = ({ navigation }: Props) => {
       dispatch(setUser(userData));
       navigation.goBack();
     } catch (error: any) {
-      Alert.alert('Error', error.response.data);
+      console.log(error);
+      Alert.alert('Error', error);
     }
   };
 

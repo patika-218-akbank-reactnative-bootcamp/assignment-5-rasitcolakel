@@ -1,4 +1,4 @@
-import { GenresResponse, PlaylistScreen, SearchResponse, Track } from '@src/types/APITypes';
+import { Artist, GenresResponse, PlaylistScreen, SearchResponse, Track } from '@src/types/APITypes';
 import axios from 'axios';
 import { UserCredential } from 'firebase/auth';
 import {
@@ -54,6 +54,20 @@ export async function searchFromUrl<T>(url: string): Promise<SearchResponse<T>> 
 
 export async function fetchPlaylist(id: number): Promise<PlaylistScreen> {
   const request = await axios.get<PlaylistScreen>(`${config.SONG_API_URL}playlist/${id}`);
+  return request.data;
+}
+
+export async function getArtistsFromGenre(id: number): Promise<Artist[]> {
+  const request = await axios.get<SearchResponse<Artist>>(
+    `${config.SONG_API_URL}genre/${id}/artists`,
+  );
+  return request.data.data;
+}
+
+export async function getTracksFromArtist(id: number): Promise<SearchResponse<Track>> {
+  const request = await axios.get<SearchResponse<Track>>(
+    `${config.SONG_API_URL}artist/${id}/top?limit=20`,
+  );
   return request.data;
 }
 

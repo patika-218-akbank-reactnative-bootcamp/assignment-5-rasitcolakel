@@ -9,6 +9,7 @@ import { Track } from '@src/types/APITypes';
 import React from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   item: Track | any;
@@ -29,8 +30,20 @@ const RenderTrack = ({ item, loading }: Props) => {
     dispatch(likeTrack(item));
   };
 
+  const handlePlay = () => {
+    if (playingTrack?.id === item.id) {
+      if (playing) {
+        dispatch(stopTrack());
+      } else {
+        dispatch(playTrack(item));
+      }
+    } else {
+      dispatch(playTrack(item));
+    }
+  };
+
   return (
-    <View style={styles.trackItemContainer}>
+    <TouchableOpacity style={styles.trackItemContainer} onPress={handlePlay}>
       <Image style={styles.tracktItemImage} uri={`${item.album.cover}`} />
       <View style={styles.trackItem}>
         <CustomText title={item.title} style={styles.trackItemTitle} />
@@ -48,19 +61,9 @@ const RenderTrack = ({ item, loading }: Props) => {
         size={30}
         color="#1DB954"
         style={[styles.trackItemIcon]}
-        onPress={() => {
-          if (playingTrack?.id === item.id) {
-            if (playing) {
-              dispatch(stopTrack());
-            } else {
-              dispatch(playTrack(item));
-            }
-          } else {
-            dispatch(playTrack(item));
-          }
-        }}
+        onPress={handlePlay}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -13,10 +13,10 @@ import {
   setTracks,
 } from '@src/store/slices/search';
 import { SearchScreenStyle as styles } from '@src/styles/Search.style';
-import { Album, Artist, Track } from '@src/types/APITypes';
+import { Album, Artist, Genre, Track } from '@src/types/APITypes';
 import { searchFromUrl } from '@src/utils/api';
 import React, { useLayoutEffect, useRef } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Image } from 'react-native-expo-image-cache';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
@@ -89,7 +89,13 @@ export default function SearchScreen({ navigation }: Props) {
           )}
         </View>
         <SearchView />
-        <GenreView />
+        <GenreView
+          goToGenreDetail={(genre: Genre) =>
+            navigation.push('GenreDetail', {
+              genre,
+            })
+          }
+        />
       </View>
     </CustomSafeAreaView>
   );
@@ -149,7 +155,11 @@ const SearchView = () => {
     </View>
   );
 };
-const GenreView = () => {
+
+type GenreViewProps = {
+  goToGenreDetail: (genre: Genre) => void;
+};
+const GenreView = ({ goToGenreDetail }: GenreViewProps) => {
   const genres = useAppSelector((state) => state.genres.data);
   const isSearching = useAppSelector((state) => state.search.isSearching);
   const colors = useAppSelector((state) => state.theme.colors);
@@ -162,7 +172,10 @@ const GenreView = () => {
     <ScrollView>
       <View style={styles.genreContainer}>
         {genres.map((item) => (
-          <View style={styles.genreItemContainer} key={item.id}>
+          <TouchableOpacity
+            style={styles.genreItemContainer}
+            key={item.id}
+            onPress={() => goToGenreDetail(item)}>
             <View
               style={[
                 styles.genreItem,
@@ -173,7 +186,7 @@ const GenreView = () => {
               <Image style={styles.genreItemImage} uri={`${item.picture_small}`} />
               <CustomText title={item.name} style={styles.genreItemTitle} />
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
+import { artistsSlice } from './slices/artists';
 import { genresSlice } from './slices/genres';
 import { playerSlice } from './slices/player';
 import { playlistsSlice } from './slices/playlists';
@@ -19,6 +20,7 @@ const store = configureStore({
     tracks: tracksSlice.reducer,
     search: searchSlice.reducer,
     player: playerSlice.reducer,
+    artists: artistsSlice.reducer,
   },
   // devtools is enabled by default in development mode
   devTools: true,

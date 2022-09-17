@@ -28,3 +28,8 @@ export function getActiveRouteName(
 
   return route.name;
 }
+
+export function isDetailScreen(routeName: string): boolean {
+  const details = ['ArtistDetail', 'PlaylistDetail', 'GenreDetail'];
+  return details.includes(routeName);
+}

@@ -22,7 +22,6 @@ const SignUp = ({ navigation }: Props) => {
   const { primary, backgroundColor } = useAppSelector((state) => state.theme.colors);
   const [values, setValues] = React.useState({
     email: '',
-    username: '',
     displayName: '',
     password: '',
     confirmPassword: '',
